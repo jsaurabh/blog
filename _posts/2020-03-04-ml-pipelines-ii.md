@@ -1,6 +1,7 @@
 ---
 title: "Machine Learning Pipelines - Part II"
 summary: "Dataset exploration. Extracting meaningful patters and trends from data"
+layout: post
 toc: true
 comments: true
 categories: [ml, mlpa]
