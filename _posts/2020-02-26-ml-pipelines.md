@@ -1,7 +1,10 @@
 ---
+title: "Machine Learning Pipelines - Part I"
+summary: "First steps. Accept and process input"
 toc: true
-description: First steps. Accept and process input
+comments: true
 categories: [ml, mlpa]
+hide: false
 ---
 # Machine Learning Pipelines - Part I
 
