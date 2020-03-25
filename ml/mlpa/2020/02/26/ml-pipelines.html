@@ -1,0 +1,128 @@
+<h1 id="machine-learning-pipelines---part-i">Machine Learning Pipelines - Part I</h1>
+
+<p>I recently started reading <a href="https://www.oreilly.com/library/view/building-machine-learning/9781492045106/">Building Machine Learning Powered Applications</a> by Emmanuel Ammeisen. What little I’ve read so far has been excellent, and I love the approach of building a real application as we walk through the book. It’s just what I’ve been looking for and I can’t wait to apply what I learn to my projects and try to extend them from notebooks to production ready web apps, however miniature my operating scale is.</p>
+
+<p>For now, this post is just me walking through the exact use case as the book(build an assistant to help users write better questions). Once I’m done with that, I plan to go back and follow the steps in the book for a real application of my own. What that is, I don’t know yet but for now - let’s dive into pipelines.</p>
+
+<h2 id="pipelines">Pipelines</h2>
+
+<p>What are pipelines? In software engineering terms, pipelines are a series of processes on inputs in a sequential manner ie. output of one becomes the input to the other. For machine learning, this usually reduces to the data transformation and pre-processing that needs to be done before the data is suitable to be fed into an architecture. As ML has exploded, so has the research and time spent on developing scalable infrastructure. The field is in a constant state of flux, with new libraries and open source tools being released rapidly. Microsoft Azure  has a nice overview on the different kinds of workflows involved in an ML pipeline [here].(https://docs.microsoft.com/en-us/azure/machine-learning/concept-ml-pipelines)</p>
+
+<h2 id="our-use-case">Our use case</h2>
+
+<p>For now, let’s continue with a simple pipeline of our own. We’ll assume that our model is already trained and focus on the inference/serving pipeline. An inference pipeline takes in the user input, processes it, passes it to the model and presents the user with the results.</p>
+
+<h3 id="accept-user-input">Accept user input</h3>
+
+<p>We can build a simple web app with a textbox to allow the user to enter text input. For this, we’ll look into <a href="https://github.com/tiangolo/fastapi">fastAPI</a> which as the name suggests, is a web framework with high performance. For more info on fastAPI, the documentation has an excellent <a href="https://fastapi.tiangolo.com/">tutorial</a>.</p>
+
+<p>Let’s start by defining the .html for the text input web app -:p</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&lt;</span><span class="n">html</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">form</span> <span class="n">name</span><span class="o">=</span><span class="s">"form1"</span> <span class="n">method</span><span class="o">=</span><span class="s">"get"</span> <span class="n">action</span><span class="o">=</span><span class="s">"/input"</span> <span class="n">enctype</span><span class="o">=</span><span class="s">"application/json"</span><span class="o">&gt;</span>    
+        <span class="o">&lt;</span><span class="n">div</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">Write</span> <span class="n">better</span> <span class="n">questions</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nb">input</span> <span class="nb">id</span><span class="o">=</span><span class="s">"search"</span> <span class="n">name</span><span class="o">=</span><span class="s">"search"</span> <span class="nb">type</span><span class="o">=</span><span class="s">"text"</span> <span class="o">/&gt;</span>
+          <span class="o">&lt;</span><span class="n">br</span><span class="o">&gt;&lt;</span><span class="n">br</span><span class="o">&gt;</span>
+          <span class="o">&lt;</span><span class="n">div</span><span class="o">&gt;</span>
+            <span class="o">&lt;</span><span class="nb">input</span> <span class="nb">type</span><span class="o">=</span><span class="s">"submit"</span> <span class="n">value</span><span class="o">=</span><span class="s">"Search"</span><span class="o">&gt;</span>
+          <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+      <span class="o">&lt;/</span><span class="n">form</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>This will give us a simple text input box, followed by a search button. It should look as follows:</p>
+
+<figure>
+  <img class="image" srcset="/images/search-input.png 2w" sizes="1px" src="/images/search-input.png" />
+  
+  <figcaption class="image-caption">Text input box</figcaption>
+  
+</figure>
+
+<p>Next up, we’ll define the logic needed to handle the incoming input using fastAPI. I know it’s overkill but it’s a chance for me to learn and dive deep into fastAPI which is something I’ve wanted to get into for a while.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+<span class="kn">from</span> <span class="nn">starlette.templating</span> <span class="kn">import</span> <span class="n">Jinja2Templates</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+<span class="n">templates</span> <span class="o">=</span> <span class="n">Jinja2Templates</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="s">'templates'</span><span class="p">)</span>
+
+<span class="o">@</span><span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s">"/"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s">"request"</span><span class="p">:</span> <span class="n">request</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">templates</span><span class="o">.</span><span class="n">TemplateResponse</span><span class="p">(</span><span class="s">"index.html"</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+
+<span class="o">@</span><span class="n">app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">"/input/"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">read_input</span><span class="p">(</span><span class="n">search</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">search</span>
+</code></pre></div></div>
+
+<p>The lines of code above are straight from the fastAPI documentation. The <a href="#accept-user-input">index.html</a> template that we defined above gets served at the root address (in this case localhost on port 8000) and the second function takes in the entered text as a query parameter and returns it. Trivial yes, but it defines the workflow that we are going to be using.</p>
+
+<h3 id="process-user-input">Process User Input</h3>
+
+<p>Now that we’ve accepted in a string, let’s go and process it. Pre-processing steps for textual data usually involve removing puncutation, converting to lowercase, removing stop words, white spaces etc. There’s a lot of room here, and the preprocessing involved will be dictated by the task and data at hand. Let’s dive into the pre-processing.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">lower</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">remove_punctuation</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="s">""</span><span class="p">,</span> <span class="s">""</span><span class="p">,</span> <span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">sanitize_ascii</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s">"ascii"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">"ignore"</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>Starting out, we can assume that this level of pre-processing is enough. Later on, we’ll come back and go through all the steps required for serving such an app in production.</p>
+
+<h3 id="tokenize">Tokenize</h3>
+
+<p>For tokenizing our input, we’ll leverage the <a href="https://spacy.io">spaCy</a> <a href="https://spacy.io/api/tokenizer">tokenizer</a>. We’ll also need to download an English language pretrained model to actually give us the tokens we need as the library by itself does not come with one built-in. You can refer the documentation <a href="https://spacy.io/models/en">here</a></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">spacy</span> <span class="k">as</span> <span class="n">sp</span>
+<span class="n">spacy</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">"en_core_web_sm"</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">token</span><span class="o">.</span><span class="n">text</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">spacy</span><span class="p">(</span><span class="n">text</span><span class="p">)]</span>
+</code></pre></div></div>
+
+<h2 id="feature-generation">Feature Generation</h2>
+
+<p>Now that we’ve defined our pre-processing strategy, the next step is to generate features. Features, as the name suggests are indicators that let us learn something meaningful about the data.</p>
+
+<p>We’ll focus on the <a href="https://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests#Flesch_reading_ease">Flesch reading-ease score</a></p>
+
+<p>We assume that sentences only end with periods(.) and the input is in the English language. Let’s compute the individual stats for the Flesch reading-ease score:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">count_syllables</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="c1">### https://codereview.stackexchange.com/a/224180
+</span>    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">'(?!e$)[aeiouy]+'</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">'^[^aeiouy]*e$'</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">count_words</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">r'\w+'</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">count_sentences</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">r'.+'</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>The Flesch score can then be easily computed as follows:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">flesch_score</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="n">total_syllables</span> <span class="o">=</span> <span class="n">count_syllables</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">total_words</span> <span class="o">=</span> <span class="n">count_words</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">total_sentences</span> <span class="o">=</span> <span class="n">count_sentences</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="mf">206.835</span> <span class="o">-</span> <span class="mf">1.015</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">total_words</span><span class="p">)</span><span class="o">/</span><span class="n">total_sentences</span> \
+        <span class="o">-</span> <span class="mf">84.6</span> <span class="o">*</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">total_syllables</span><span class="p">)</span><span class="o">/</span><span class="n">total_words</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>That’s it for this post. I’ll pick up with Feature Extraction for the next post.</p>
+
+<p>Any questions/comments or suggestions, please let me know in the comments below!</p>

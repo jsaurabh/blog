@@ -1,0 +1,20 @@
+<h1 id="machine-learning-pipelines---part-ii">Machine Learning Pipelines - Part II</h1>
+
+<p>In <a href="https://jsaurabh.dev/ml/mlpa/2020/02/26/ml-pipelines.html">Part I</a>, we went ahead and wrote a rudimentary version of the pipeline we’ll be using for the webapp.</p>
+
+<div class="Toast Toast--warning googoo">
+   <span class="Toast-icon"><svg class="octicon octicon-alert" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 000 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 00.01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path></svg></span>
+   <span class="Toast-content">It's not a pipeline</span>
+</div>
+
+<p>In this post, we’ll focus on acquiring an initial dataset and extract and generate features.</p>
+
+<h2 id="writing-better-questions">Writing Better Questions</h2>
+
+<p>Following along with the book, we want to build an editor that lets its users write better questions. Before we go and build a model, the first step is playing around with the data. That begs the question, what kind of dataset should we be looking at?</p>
+
+<p>Some good places to find datasets are <a href="https://www.kaggle.com/datasets">Kaggle</a>, the <a href="https://archive.ics.uci.edu/ml/index.php">UCI Machine Learning Repository</a> as well as the <a href="https://registry.opendata.aws/">AWS Open Data registry</a>.</p>
+
+<p>For our use case, we’ll go ahead with StackExchange <a href="https://archive.org/download/stackexchange">dump</a> specifically the Writers dump <a href="https://ia800107.us.archive.org/view_archive.php?archive=/27/items/stackexchange/writers.stackexchange.com.7z">here</a></p>
+
+<p>Each of these dumps is an XML file with the headers and attributes containing the actual info we need. We need to extract raw text, and this is where we’ll write a basic pipeline to get the data we need.</p>
