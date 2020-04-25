@@ -3,17 +3,19 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
-<title>Saurabh | Masters grad. Software Engineer. Mostly blog about neural nets and other cool projects.</title>
+<title>Markov Localization | Saurabh</title>
 <meta name="generator" content="Jekyll v4.0.0" />
-<meta property="og:title" content="Saurabh" />
+<meta property="og:title" content="Markov Localization" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Masters grad. Software Engineer. Mostly blog about neural nets and other cool projects." />
-<meta property="og:description" content="Masters grad. Software Engineer. Mostly blog about neural nets and other cool projects." />
-<link rel="canonical" href="https://jsaurabh.dev/" />
-<meta property="og:url" content="https://jsaurabh.dev/" />
+<meta name="description" content="An intro to the Markov Localization algorithm and implementation in C++" />
+<meta property="og:description" content="An intro to the Markov Localization algorithm and implementation in C++" />
+<link rel="canonical" href="https://jsaurabh.dev/robotics/localization/sdc/2020/04/25/markov-localization.html" />
+<meta property="og:url" content="https://jsaurabh.dev/robotics/localization/sdc/2020/04/25/markov-localization.html" />
 <meta property="og:site_name" content="Saurabh" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-25T00:00:00-05:00" />
 <script type="application/ld+json">
-{"headline":"Saurabh","description":"Masters grad. Software Engineer. Mostly blog about neural nets and other cool projects.","@type":"WebSite","url":"https://jsaurabh.dev/","name":"Saurabh","@context":"https://schema.org"}</script>
+{"headline":"Markov Localization","description":"An intro to the Markov Localization algorithm and implementation in C++","datePublished":"2020-04-25T00:00:00-05:00","dateModified":"2020-04-25T00:00:00-05:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://jsaurabh.dev/robotics/localization/sdc/2020/04/25/markov-localization.html"},"url":"https://jsaurabh.dev/robotics/localization/sdc/2020/04/25/markov-localization.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jsaurabh.dev/feed.xml" title="Saurabh" /><!-- the google_analytics_id gets auto inserted from the config file -->
 
@@ -22,17 +24,19 @@
 <script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-150018830-1','auto');ga('require','displayfeatures');ga('send','pageview');</script>
 
 <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
-<title>Saurabh | Masters grad. Software Engineer. Mostly blog about neural nets and other cool projects.</title>
+<title>Markov Localization | Saurabh</title>
 <meta name="generator" content="Jekyll v4.0.0" />
-<meta property="og:title" content="Saurabh" />
+<meta property="og:title" content="Markov Localization" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="Masters grad. Software Engineer. Mostly blog about neural nets and other cool projects." />
-<meta property="og:description" content="Masters grad. Software Engineer. Mostly blog about neural nets and other cool projects." />
-<link rel="canonical" href="https://jsaurabh.dev/" />
-<meta property="og:url" content="https://jsaurabh.dev/" />
+<meta name="description" content="An intro to the Markov Localization algorithm and implementation in C++" />
+<meta property="og:description" content="An intro to the Markov Localization algorithm and implementation in C++" />
+<link rel="canonical" href="https://jsaurabh.dev/robotics/localization/sdc/2020/04/25/markov-localization.html" />
+<meta property="og:url" content="https://jsaurabh.dev/robotics/localization/sdc/2020/04/25/markov-localization.html" />
 <meta property="og:site_name" content="Saurabh" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-25T00:00:00-05:00" />
 <script type="application/ld+json">
-{"headline":"Saurabh","description":"Masters grad. Software Engineer. Mostly blog about neural nets and other cool projects.","@type":"WebSite","url":"https://jsaurabh.dev/","name":"Saurabh","@context":"https://schema.org"}</script>
+{"headline":"Markov Localization","description":"An intro to the Markov Localization algorithm and implementation in C++","datePublished":"2020-04-25T00:00:00-05:00","dateModified":"2020-04-25T00:00:00-05:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://jsaurabh.dev/robotics/localization/sdc/2020/04/25/markov-localization.html"},"url":"https://jsaurabh.dev/robotics/localization/sdc/2020/04/25/markov-localization.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 <link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
@@ -106,43 +110,90 @@ window.onload = wrap_img;
 </header>
 <main class="page-content" aria-label="Content">
       <div class="wrapper">
-        <div class="home"><p>Hello and welcome to my blog. You’ll find all my posts and links to projects below. Happy reading!</p>
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
-<p><i class="fas fa-thumbtack"></i></p>
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Markov Localization</h1><p class="page-description">An intro to the Markov Localization algorithm and implementation in C++</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-04-25T00:00:00-05:00" itemprop="datePublished">
+        Apr 25, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      1 min read
+    
+</span></p>
 
-<p><strong>UB Deep Learning <a href="https://jsaurabh.github.io/dl-ub">Special Interest Group</a></strong></p>
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#robotics">robotics</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#localization">localization</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#sdc">sdc</a>
+        
+      
+      </p>
+    
 
-<h2 id="posts">Posts</h2>
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/jsaurabh/blog/tree/master/_notebooks/2020-04-25-markov-localization.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/jsaurabh/blog/master?filepath=_notebooks%2F2020-04-25-markov-localization.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/jsaurabh/blog/blob/master/_notebooks/2020-04-25-markov-localization.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-04-25-markov-localization.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+</div>
 
 
 
-  
-
-  <!-- Hide posts if front matter flag hide:true -->
-  
-  
-
-  <ul class="post-list"><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/robotics/localization/sdc/2020/04/21/localization.html">
-            Localization for Autonomous Vehicles
-          </a>
-        </h3>
-        <p class="post-meta-description">A simple intro to the localization process for self driving cars</p>
-          <p class="post-meta">Apr 21, 2020</p>
-      </div>
-  </div></li><li><div class="Box box-shadow-medium rounded-1 col-12"><div class="col-8 d-table-cell p-3">
-        <h3>
-          <a class="post-link" href="/ml/mlpa/2020/02/26/ml-pipelines.html">
-            Machine Learning Pipelines - Part I
-          </a>
-        </h3>
-        <p class="post-meta-description"></p>
-          <p class="post-meta">Feb 26, 2020</p>
-      </div>
-  </div></li></ul>
-
-    </div>
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="jsaurabh/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/robotics/localization/sdc/2020/04/25/markov-localization.html" hidden></a>
+</article>
       </div>
     </main><footer class="site-footer h-card">
   <data class="u-url" href="/"></data>
