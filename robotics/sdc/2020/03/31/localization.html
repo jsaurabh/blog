@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Localization for Autonomous Vehicles | Saurabh</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Localization for Autonomous Vehicles" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="An intro to localization techniques and algorithms for self driving cars" />
+<meta property="og:description" content="An intro to localization techniques and algorithms for self driving cars" />
+<link rel="canonical" href="https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html" />
+<meta property="og:url" content="https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html" />
+<meta property="og:site_name" content="Saurabh" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-03-31T00:00:00-05:00" />
+<script type="application/ld+json">
+{"headline":"Localization for Autonomous Vehicles","description":"An intro to localization techniques and algorithms for self driving cars","datePublished":"2020-03-31T00:00:00-05:00","dateModified":"2020-03-31T00:00:00-05:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html"},"url":"https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jsaurabh.dev/feed.xml" title="Saurabh" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-150018830-1','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Localization for Autonomous Vehicles | Saurabh</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Localization for Autonomous Vehicles" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="An intro to localization techniques and algorithms for self driving cars" />
+<meta property="og:description" content="An intro to localization techniques and algorithms for self driving cars" />
+<link rel="canonical" href="https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html" />
+<meta property="og:url" content="https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html" />
+<meta property="og:site_name" content="Saurabh" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-03-31T00:00:00-05:00" />
+<script type="application/ld+json">
+{"headline":"Localization for Autonomous Vehicles","description":"An intro to localization techniques and algorithms for self driving cars","datePublished":"2020-03-31T00:00:00-05:00","dateModified":"2020-03-31T00:00:00-05:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html"},"url":"https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://jsaurabh.dev/feed.xml" title="Saurabh" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-150018830-1','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"> </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        renderMathInElement( document.body, {
+        delimiters: [
+            {left: "$$", right: "$$", display: true},
+            {left: "[%", right: "%]", display: true},
+            {left: "$", right: "$", display: false}
+        ]}
+        );
+    });
+    </script>
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Saurabh</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/about/">About Me</a><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Localization for Autonomous Vehicles</h1><p class="page-description">An intro to localization techniques and algorithms for self driving cars</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-03-31T00:00:00-05:00" itemprop="datePublished">
+        Mar 31, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      8 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#robotics">robotics</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/categories/#sdc">sdc</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/jsaurabh/blog/tree/master/_notebooks/2020-03-31-localization.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/jsaurabh/blog/master?filepath=_notebooks%2F2020-03-31-localization.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/jsaurabh/blog/blob/master/_notebooks/2020-03-31-localization.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Localization">Localization </a></li>
+<li class="toc-entry toc-h2"><a href="#Intuition">Intuition </a></li>
+<li class="toc-entry toc-h2"><a href="#Sensing">Sensing </a></li>
+<li class="toc-entry toc-h2"><a href="#Movement">Movement </a></li>
+<li class="toc-entry toc-h2"><a href="#Formalizing-Localization">Formalizing Localization </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Sensing">Sensing </a></li>
+</ul>
+</li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-03-31-localization.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Localization">
+<a class="anchor" href="#Localization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Localization<a class="anchor-link" href="#Localization"> </a>
+</h2>
+<p>Localization, as you have probably guessed, is the process of locating oneself, usually in the confines of an environment. In the context of autonomous vehicles, localization is an extremely important step. It is what enables self driving cars to function properly and make proper turns, rather than crashing head first into a traffic signal or a tree or any other kind of obstacle that may be in its path.</p>
+<p>As the name implies, to localize is to know where you are. Historically, Global Positioning Systems(GPS) has been used for this very purpose. However, as important and useful GPS is, it's simply not accurate enough to be useful in critical systems such as self driving cars. It is essential that a self driving car be accurate in its measurements and have confidence in that accuracy, or the alternative is tons of crashes and accidents.</p>
+<p>GPS has upto 2-10 meters of error. That's not ideal, and the error needs to be better, in cm rather than meters That's the question that the localization process tries to answer. Let's get into the intution of how that actually happens, and then we'll implement a set of functions in <code>python</code> that are essentially how localization for self driving car works.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>&gt; Important: The type of localization I'm writing about needs a good high definition map of the environment that the car is going to be operating in. Simultaneous Localization and Mapping(SLAM) is another type of localization that doesn't suffer from the same constraint</code></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Intuition">
+<a class="anchor" href="#Intuition" aria-hidden="true"><span class="octicon octicon-link"></span></a>Intuition<a class="anchor-link" href="#Intuition"> </a>
+</h2>
+<p>Localization really is about continuous sensing and movement. You start out with a prior belief, which represents your view of what the environment looks like. On the basis of the belief, we sense the environment, update our belief based on the sensing results and make movements that correspond to the new information we learned from sensing.</p>
+<p>In a perfect world, robot motion would be exact. However, it hardly ever is. Sensing itself is not perfect, and there's always going to be some kind of error involved, either in your movements or in the precision of your sensing. But intuitively, accounting for imperfect sensing and motion, it follows that we gain information when we sense(that information may not be highly accurate, but it's a gain). And similarly, when we move with inexact motion, we lose information. That's what localization really is, a continuous cycle of sensing and movement. And the imperfectness of the motion and sensing is what makes it a hard problem to solve.</p>
+<p>Let's try to understand, using code, these two processes.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Sensing">
+<a class="anchor" href="#Sensing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sensing<a class="anchor-link" href="#Sensing"> </a>
+</h2>
+<p>Sensing takes in a belief(or a prior distribution) for the environment, and then updates that belief after sensing the environment. Say you have a bunch of buckets, either green or red in a uniform probability distribution. You go on and sense, say red buckets. It follows from probability theory that the belief for the red buckets should go up, and correspondingly the belief for the green buckets should go down.</p>
+<p>Let's implement this in code.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#collapse-hide</span>
+<span class="c1">#imports</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description" open="">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#collapse-show</span>
+<span class="n">n_buckets</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">buckets</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">'green'</span><span class="p">,</span> <span class="s1">'red'</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_buckets</span><span class="p">)]</span>
+<span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="o">/</span><span class="n">n_buckets</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_buckets</span> <span class="c1"># uniform probability distribution</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">buckets</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>['red', 'red', 'red', 'red', 'red']
+[0.2, 0.2, 0.2, 0.2, 0.2]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This defines the environment and our prior belief. Now, let's see what happens when we sense. Say we sense a red bucket. How does this affect my prior belief over different buckets?</p>
+<p>The probabilities for the red buckets should go up, and the ones for green buckets should go down. Any bucket for which the color and our sensing is correct, we multipy it by a large weight, and a smaller weight for which it's incorrect.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description" open="">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#collapse-show</span>
+<span class="n">pHit</span> <span class="o">=</span> <span class="mf">0.6</span> <span class="c1">#for correct measurements</span>
+<span class="n">pMiss</span> <span class="o">=</span> <span class="mf">0.2</span> <span class="c1">#for incorrect measurements</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_buckets</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">buckets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'green'</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">pMiss</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">pHit</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[0.12, 0.12, 0.12, 0.12, 0.12]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This represents our new distribution, also called a posterior probability distribution. However, as you can see it's not a valid probability distribution as it doesn't sum to 1. To fix that, we'll normalize it</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description" open="">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#collapse-show</span>
+<span class="n">s</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_buckets</span><span class="p">):</span>
+    <span class="n">p</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="n">s</span>
+    
+<span class="nb">print</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[0.2, 0.2, 0.2, 0.2, 0.2]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As you can see, this is a valid distribution. This is what sensing does. If you compare our posterior distribution with our prior belief, we can see that we have more information and have a greater idea about the environment for the given task(namely sensing red buckets). This is the information gain described earlier.</p>
+<p>Let's refactor everything into one function.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">sense</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+        <span class="n">hit</span> <span class="o">=</span> <span class="p">(</span><span class="n">buckets</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="n">t</span><span class="p">)</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">hit</span> <span class="o">*</span> <span class="n">pHit</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">hit</span><span class="p">)</span> <span class="o">*</span> <span class="n">pMiss</span><span class="p">))</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">)):</span>
+        <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="n">s</span>
+    <span class="k">return</span> <span class="n">res</span>
+
+<span class="n">n_buckets</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">buckets</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">'green'</span><span class="p">,</span> <span class="s1">'red'</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_buckets</span><span class="p">)]</span>
+<span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="o">/</span><span class="n">n_buckets</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_buckets</span> <span class="c1">#prior</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">buckets</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Prior distribution is: </span><span class="si">{0}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+<span class="n">target</span> <span class="o">=</span> <span class="s1">'red'</span>
+<span class="n">p</span> <span class="o">=</span> <span class="n">sense</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="c1">#posterior</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Posterior distribution is: </span><span class="si">{0}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>['green', 'red', 'green', 'red', 'green']
+Prior distribution is: [0.2, 0.2, 0.2, 0.2, 0.2]
+Posterior distribution is: [0.11111111111111113, 0.3333333333333333, 0.11111111111111113, 0.3333333333333333, 0.11111111111111113]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Movement">
+<a class="anchor" href="#Movement" aria-hidden="true"><span class="octicon octicon-link"></span></a>Movement<a class="anchor-link" href="#Movement"> </a>
+</h2>
+<p>Movement is the second part of the localization equation. We'll only deal with inexact motion, exact motion is a trivial case and a rare scenarior in real world performance.</p>
+<p>Assuming the world is cyclic, that is the rightmost bucket wraps around as the new leftmost bucket as you move them around. Inexact motion exists when there is uncertainty about the accuracy of the motion of a robot.</p>
+<p>Let's define the parameters for the inexact motion. Say the probabilties are as follows:</p>
+<ul>
+<li>Exact Motion : $P(X_{i+t} \mid X_{i})$ = 0.8   </li>
+<li>Undershooting: $P(X_{i+t-1} \mid X_{i})$ = 0.1 </li>
+<li>Overshooting : $P(X_{i+t+1} \mid X_{i})$ = 0.1 
+where t is the target</li>
+</ul>
+<p>What this means is that we have an 80% chance of an exact motion and a 10% chance of either undershooting or overshooting our target. <em>Assume that overshooting or undershooting happens in incrmenents(decrements) of 1.</em></p>
+<p>Let's define inexact motion, accounting for the probabilities defined above.</p>
+<p><code>&gt; Note: For uniform distributions, inexact motion has no effect on the posterior distribution. Uniform distributions are the state of least information. As everything is equally likely, we know nothing extra.</code></p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">pExact</span> <span class="o">*</span> <span class="n">p</span><span class="p">[(</span><span class="n">i</span><span class="o">-</span><span class="n">unit</span><span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">))]</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">pOvershoot</span> <span class="o">*</span> <span class="n">p</span><span class="p">[(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="n">unit</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="n">pUndershoot</span> <span class="o">*</span> <span class="n">p</span><span class="p">[(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">unit</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)]</span>
+        <span class="n">q</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">q</span>
+
+<span class="n">pExact</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">pOvershoot</span><span class="p">,</span> <span class="n">pUndershoot</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Environment is: </span><span class="si">{0}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">buckets</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Prior distribution is: </span><span class="si">{0}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Distribution after movement is: </span><span class="si">{0}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">move</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Environment is: ['green', 'red', 'green', 'red', 'green']
+Prior distribution is: [0.11111111111111113, 0.3333333333333333, 0.11111111111111113, 0.3333333333333333, 0.11111111111111113]
+Distribution after movement is: [0.13333333333333336, 0.13333333333333336, 0.2888888888888889, 0.15555555555555556, 0.2888888888888889]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>It's not easily seen, but given our target is <code>red</code> buckets, the distribution after movements suggests that we now know less about the presence of red buckets in the environment. What would happen if we were to move again, say 2 times?</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description" open="">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#collapse-show</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Prior distribution(after sensing) is: </span><span class="si">{0}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">move</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Posterior distribution(after movement) is: </span><span class="si">{0}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Prior distribution(after sensing) is: [0.28377419354838707, 0.17936559139784947, 0.1497956989247312, 0.16756451612903234, 0.21950000000000006]
+Posterior distribution(after movement) is: [0.17431129032258072, 0.22037580645161295, 0.25428306451612903, 0.1916231182795699, 0.15940672043010756]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The uncertainty keeps increasing, and the amount of information gain keeps going down(wrt to the target). This is the entire localization loop, a continuous iteration of <code>sense</code> and <code>move</code>. You take an initial belief, use it to sense and then move accordingly. Every iteration of this loop(as we've just shown) cumulatively causes information loss, largely because of the inexact motion of robots.</p>
+<p>Every time we <code>sense</code>, the probability distribution is more focused <em>ie.</em> it learns more and after every iteration of <code>move</code>, the distribution is a bit more spread out because of information loss.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Formalizing-Localization">
+<a class="anchor" href="#Formalizing-Localization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Formalizing Localization<a class="anchor-link" href="#Formalizing-Localization"> </a>
+</h2>
+<p>We looked at a very simple example above. While it may not look like we've implemented localization, it does implement the essence of how localization works. In the real world, the green and red buckets would be substituted by lane markers, trees, signposts <em>etc</em>. And the measurements obtained from sensing(say a camera) would be the color of those individual objects. This same approach can be used to work on image data, as long as we can make the proper associations.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Sensing">
+<a class="anchor" href="#Sensing" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sensing<a class="anchor-link" href="#Sensing"> </a>
+</h3>
+<p>$P(X \mid Z) = \frac {P(Z \mid X) * P(X)}{P(Z)}$</p>
+<p>The above equation defines the Bayes rule, which incorporates prior knowledge to find the probability of an event occuring.</p>
+<p>In terms of measurements(sensing), consider X to be one of the grids in a map and Z to be the measurement update. So, the equation described above intends to calculate the probability of the location after taking the measurement into consideration</p>
+<p>Here, $P(X)$ is the prior distribution and $P(X \mid Z) is the probability of a colored bucket for every possible location in the environment. The product of these will correspond to the non-normalized probability distribution from earlier.</p>
+<p>It then follows that $P(Z)$ is the sum of such probability distributions, over all grid cells in the environment leading to a normalized posterior distribution. What $P(Z)$ is really doing is assigning each cell a probability, irrespective of which cell it is.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p></p>
+<div class="footnotes"><p id="fn-1">1. Referenced from the Localization module in the Udacity Self Driving Cars Nanodegree program<a href="#fnref-1" class="footnote footnotes">↩</a></p></div>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="jsaurabh/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/robotics/sdc/2020/03/31/localization.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Masters grad. Software Engineer. Mostly blog about neural nets and other cool projects.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/jsaurabh" title="jsaurabh"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://www.linkedin.com/in/jsaurabh95" title="jsaurabh95"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#linkedin"></use></svg></a></li><li><a rel="me" href="https://twitter.com/jsaurabh1995" title="jsaurabh1995"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
