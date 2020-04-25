@@ -5,7 +5,7 @@ layout: post
 toc: true
 comments: true
 categories: [ml, mlpa]
-hide: false
+hide: true
 ---
 # Machine Learning Pipelines - Part II
 
