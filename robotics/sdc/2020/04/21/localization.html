@@ -7,15 +7,15 @@
 <meta name="generator" content="Jekyll v4.0.0" />
 <meta property="og:title" content="Localization for Autonomous Vehicles" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="An intro to localization techniques and algorithms for self driving cars" />
-<meta property="og:description" content="An intro to localization techniques and algorithms for self driving cars" />
-<link rel="canonical" href="https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html" />
-<meta property="og:url" content="https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html" />
+<meta name="description" content="A simple intro to the localization process for self driving cars" />
+<meta property="og:description" content="A simple intro to the localization process for self driving cars" />
+<link rel="canonical" href="https://jsaurabh.dev/robotics/sdc/2020/04/21/localization.html" />
+<meta property="og:url" content="https://jsaurabh.dev/robotics/sdc/2020/04/21/localization.html" />
 <meta property="og:site_name" content="Saurabh" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2020-03-31T00:00:00-05:00" />
+<meta property="article:published_time" content="2020-04-21T00:00:00-05:00" />
 <script type="application/ld+json">
-{"headline":"Localization for Autonomous Vehicles","description":"An intro to localization techniques and algorithms for self driving cars","datePublished":"2020-03-31T00:00:00-05:00","dateModified":"2020-03-31T00:00:00-05:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html"},"url":"https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html","@context":"https://schema.org"}</script>
+{"headline":"Localization for Autonomous Vehicles","description":"A simple intro to the localization process for self driving cars","datePublished":"2020-04-21T00:00:00-05:00","dateModified":"2020-04-21T00:00:00-05:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://jsaurabh.dev/robotics/sdc/2020/04/21/localization.html"},"url":"https://jsaurabh.dev/robotics/sdc/2020/04/21/localization.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 <link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://jsaurabh.dev/feed.xml" title="Saurabh" /><!-- the google_analytics_id gets auto inserted from the config file -->
 
@@ -28,15 +28,15 @@
 <meta name="generator" content="Jekyll v4.0.0" />
 <meta property="og:title" content="Localization for Autonomous Vehicles" />
 <meta property="og:locale" content="en_US" />
-<meta name="description" content="An intro to localization techniques and algorithms for self driving cars" />
-<meta property="og:description" content="An intro to localization techniques and algorithms for self driving cars" />
-<link rel="canonical" href="https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html" />
-<meta property="og:url" content="https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html" />
+<meta name="description" content="A simple intro to the localization process for self driving cars" />
+<meta property="og:description" content="A simple intro to the localization process for self driving cars" />
+<link rel="canonical" href="https://jsaurabh.dev/robotics/sdc/2020/04/21/localization.html" />
+<meta property="og:url" content="https://jsaurabh.dev/robotics/sdc/2020/04/21/localization.html" />
 <meta property="og:site_name" content="Saurabh" />
 <meta property="og:type" content="article" />
-<meta property="article:published_time" content="2020-03-31T00:00:00-05:00" />
+<meta property="article:published_time" content="2020-04-21T00:00:00-05:00" />
 <script type="application/ld+json">
-{"headline":"Localization for Autonomous Vehicles","description":"An intro to localization techniques and algorithms for self driving cars","datePublished":"2020-03-31T00:00:00-05:00","dateModified":"2020-03-31T00:00:00-05:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html"},"url":"https://jsaurabh.dev/robotics/sdc/2020/03/31/localization.html","@context":"https://schema.org"}</script>
+{"headline":"Localization for Autonomous Vehicles","description":"A simple intro to the localization process for self driving cars","datePublished":"2020-04-21T00:00:00-05:00","dateModified":"2020-04-21T00:00:00-05:00","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://jsaurabh.dev/robotics/sdc/2020/04/21/localization.html"},"url":"https://jsaurabh.dev/robotics/sdc/2020/04/21/localization.html","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
 <link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
@@ -113,8 +113,8 @@ window.onload = wrap_img;
         <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">Localization for Autonomous Vehicles</h1><p class="page-description">An intro to localization techniques and algorithms for self driving cars</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-03-31T00:00:00-05:00" itemprop="datePublished">
-        Mar 31, 2020
+    <h1 class="post-title p-name" itemprop="name headline">Localization for Autonomous Vehicles</h1><p class="page-description">A simple intro to the localization process for self driving cars</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-04-21T00:00:00-05:00" itemprop="datePublished">
+        Apr 21, 2020
       </time>
        • <span class="read-time" title="Estimated read time">
     
@@ -140,19 +140,19 @@ window.onload = wrap_img;
         <div class="pb-5 d-flex flex-wrap flex-justify-end">
           <div class="px-2">
 
-    <a href="https://github.com/jsaurabh/blog/tree/master/_notebooks/2020-03-31-localization.ipynb" role="button" target="_blank">
+    <a href="https://github.com/jsaurabh/blog/tree/master/_notebooks/2020-04-21-localization.ipynb" role="button" target="_blank">
 <img class="notebook-badge-image" src="/assets/badges/github.svg" alt="View On GitHub">
     </a>
 </div>
 
           <div class="px-2">
-    <a href="https://mybinder.org/v2/gh/jsaurabh/blog/master?filepath=_notebooks%2F2020-03-31-localization.ipynb" target="_blank">
+    <a href="https://mybinder.org/v2/gh/jsaurabh/blog/master?filepath=_notebooks%2F2020-04-21-localization.ipynb" target="_blank">
         <img class="notebook-badge-image" src="/assets/badges/binder.svg" alt="Open In Binder"/>
     </a>
 </div>
 
           <div class="px-2">
-    <a href="https://colab.research.google.com/github/jsaurabh/blog/blob/master/_notebooks/2020-03-31-localization.ipynb" target="_blank">
+    <a href="https://colab.research.google.com/github/jsaurabh/blog/blob/master/_notebooks/2020-04-21-localization.ipynb" target="_blank">
         <img class="notebook-badge-image" src="/assets/badges/colab.svg" alt="Open In Colab"/>
     </a>
 </div>
@@ -174,7 +174,7 @@ window.onload = wrap_img;
 #################################################
 ### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
 #################################################
-# file to edit: _notebooks/2020-03-31-localization.ipynb
+# file to edit: _notebooks/2020-04-21-localization.ipynb
 -->
 
 <div class="container" id="notebook-container">
@@ -235,31 +235,6 @@ window.onload = wrap_img;
     
     
 <div class="cell border-box-sizing code_cell rendered">
-<details class="description">
-      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
-        <p></p>
-<div class="input">
-
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#collapse-hide</span>
-<span class="c1">#imports</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-    </details>
-</div>
-    
-
-    
-    
-<div class="cell border-box-sizing code_cell rendered">
 <details class="description" open="">
       <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
         <p></p>
@@ -268,6 +243,7 @@ window.onload = wrap_img;
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#collapse-show</span>
+<span class="kn">import</span> <span class="nn">random</span>
 <span class="n">n_buckets</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="n">buckets</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">'green'</span><span class="p">,</span> <span class="s1">'red'</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_buckets</span><span class="p">)]</span>
 <span class="n">p</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="o">/</span><span class="n">n_buckets</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_buckets</span> <span class="c1"># uniform probability distribution</span>
@@ -286,7 +262,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>['red', 'red', 'red', 'red', 'red']
+<pre>['red', 'red', 'green', 'green', 'green']
 [0.2, 0.2, 0.2, 0.2, 0.2]
 </pre>
 </div>
@@ -340,7 +316,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[0.12, 0.12, 0.12, 0.12, 0.12]
+<pre>[0.12, 0.12, 0.04000000000000001, 0.04000000000000001, 0.04000000000000001]
 </pre>
 </div>
 </div>
@@ -389,7 +365,7 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>[0.2, 0.2, 0.2, 0.2, 0.2]
+<pre>[0.3333333333333332, 0.3333333333333332, 0.1111111111111111, 0.1111111111111111, 0.1111111111111111]
 </pre>
 </div>
 </div>
@@ -446,9 +422,9 @@ window.onload = wrap_img;
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>['green', 'red', 'green', 'red', 'green']
+<pre>['red', 'red', 'green', 'green', 'red']
 Prior distribution is: [0.2, 0.2, 0.2, 0.2, 0.2]
-Posterior distribution is: [0.11111111111111113, 0.3333333333333333, 0.11111111111111113, 0.3333333333333333, 0.11111111111111113]
+Posterior distribution is: [0.2727272727272727, 0.2727272727272727, 0.09090909090909091, 0.09090909090909091, 0.2727272727272727]
 </pre>
 </div>
 </div>
@@ -514,9 +490,9 @@ where t is the target</li>
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Environment is: ['green', 'red', 'green', 'red', 'green']
-Prior distribution is: [0.11111111111111113, 0.3333333333333333, 0.11111111111111113, 0.3333333333333333, 0.11111111111111113]
-Distribution after movement is: [0.13333333333333336, 0.13333333333333336, 0.2888888888888889, 0.15555555555555556, 0.2888888888888889]
+<pre>Environment is: ['red', 'red', 'green', 'green', 'red']
+Prior distribution is: [0.2727272727272727, 0.2727272727272727, 0.09090909090909091, 0.09090909090909091, 0.2727272727272727]
+Distribution after movement is: [0.2545454545454545, 0.2727272727272727, 0.2545454545454545, 0.1090909090909091, 0.1090909090909091]
 </pre>
 </div>
 </div>
@@ -563,8 +539,8 @@ Distribution after movement is: [0.13333333333333336, 0.13333333333333336, 0.288
 <div class="output_area">
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Prior distribution(after sensing) is: [0.28377419354838707, 0.17936559139784947, 0.1497956989247312, 0.16756451612903234, 0.21950000000000006]
-Posterior distribution(after movement) is: [0.17431129032258072, 0.22037580645161295, 0.25428306451612903, 0.1916231182795699, 0.15940672043010756]
+<pre>Prior distribution(after sensing) is: [0.2727272727272727, 0.2727272727272727, 0.09090909090909091, 0.09090909090909091, 0.2727272727272727]
+Posterior distribution(after movement) is: [0.12363636363636364, 0.24181818181818182, 0.26909090909090905, 0.24181818181818182, 0.12363636363636364]
 </pre>
 </div>
 </div>
@@ -631,7 +607,7 @@ Posterior distribution(after movement) is: [0.17431129032258072, 0.2203758064516
         theme="github-light"
         crossorigin="anonymous"
         async>
-</script><a class="u-url" href="/robotics/sdc/2020/03/31/localization.html" hidden></a>
+</script><a class="u-url" href="/robotics/sdc/2020/04/21/localization.html" hidden></a>
 </article>
       </div>
     </main><footer class="site-footer h-card">
