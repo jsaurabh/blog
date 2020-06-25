@@ -119,7 +119,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      8 min read
+      9 min read
     
 </span></p>
 
@@ -212,13 +212,7 @@ window.onload = wrap_img;
 <a class="anchor" href="#CleanRobotics-and-TrashBot" aria-hidden="true"><span class="octicon octicon-link"></span></a>CleanRobotics and TrashBot<a class="anchor-link" href="#CleanRobotics-and-TrashBot"> </a>
 </h2>
 <p>TrashBot is a family of automated waste sorting bins produced by CleanRobotics. The idea behind TrashBot is to use the latest advances in AI and Computer Vision and Robotics to develop a product that can segregate trash more effectively than humans can.</p>
-<p>CleanRobotics's current approach involves using single-class image classification to identify the trash items emptied into the TrashBot, and then use the underlying robotics to segregate it automatically. This leads to many problems, chief of which is not being able to do multi-class classification. You're also limited to only being to segregate one item at a time, severely impacting real world performance.
-
-</p>
-<center>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/watch?v=eAmRMahLmxk" frameborder="0" allowfullscreen=""></iframe>
-</center>
-
+<p>CleanRobotics's current approach involves using single-class image classification to identify the trash items emptied into the TrashBot, and then use the underlying robotics to segregate it automatically. This leads to many problems, chief of which is not being able to do multi-class classification. You're also limited to only being to segregate one item at a time, severely impacting real world performance.</p>
 
 </div>
 </div>
@@ -229,7 +223,7 @@ window.onload = wrap_img;
 <p></p>
 <div class="flash">
     <svg class="octicon octicon-info octicon octicon-info" viewbox="0 0 14 16" version="1.1" width="14" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 01-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 01-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg>
-    <strong>Note: </strong>This was a consulting project for the AI Fellowship at Insight Data Science, NY in partnership with CleanRobotics. Express permission has been obtained for any data, figures and results being talked about here. Deployment is internal to CleanRobotics, and screenshots are used to demonstrate where necessary.
+    <strong>Note: </strong>This was a consulting project for the AI Fellowship at Insight Data Science, NY in partnership with CleanRobotics. Express permission has been obtained for any data, figures and results being talked about here. Deployment is internal to CleanRobotics, and screenshots on MS-COCO are used for demonstration where necessary.
 </div>
 
 </div>
@@ -242,7 +236,7 @@ window.onload = wrap_img;
 <a class="anchor" href="#Dataset" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dataset<a class="anchor-link" href="#Dataset"> </a>
 </h2>
 <p>As mentioned previously, the TrashBot currently works on an image classification model. The first task on the TODO list was to actually create a dataset suitable for object detection tasks. That meant going from per image label to per item bounding boxes and labels for items in each image in the dataset. I started by annotating the required ground truth boxes and class labels, creating an object detection dataset with roughly 8k images and upwards of 10k box annotations.</p>
-<p>The dataset we're dealing with is highly imbalanced, and we'll go into data augmentation and training time transforms below.</p>
+<p>In total, there are 57 categories which make up the approximately 8k images. The range of objects per class if 7 at the lower end and upwards of 1300 at the higher end. The dataset is highly imbalanced, and I'll go into data augmentation and training time transforms below.</p>
 
 </div>
 </div>
@@ -401,8 +395,8 @@ f. BiFPN
 <h2 id="Pipeline">
 <a class="anchor" href="#Pipeline" aria-hidden="true"><span class="octicon octicon-link"></span></a>Pipeline<a class="anchor-link" href="#Pipeline"> </a>
 </h2>
-<p>To deal with class imbalance, the original dataset was selectively augmented using the data augmentation described above. Classes with an average number of occurrences &lt; 200 were randomly augmented till they had at least 200 images.</p>
-<p>For the EfficientDet network, the new augmented dataset was passed through the training loop for 50 epochs on an AWS p2.xlarge GPU instance, with each epoch taking around 20 minutes on average. The data augmentation loop is highly randomized, with different runs of augmentation yielding different versions of the dataset.</p>
+<p>To deal with class imbalance, the original dataset was selectively augmented using the data augmentation described above. Classes with an average number of occurrences &lt; 200 were randomly augmented till they had at least 200 images. Furthermore, there is an additional round of training time transformations that each image goes through.</p>
+<p>For the EfficientDet network, the newly augmented dataset was passed through the training loop for 50 epochs on an AWS p2.xlarge GPU instance, with each epoch taking around 20 minutes on average. The data augmentation loop is highly randomized, with different runs of augmentation yielding different versions of the dataset.</p>
 <p>For the SSD MobileNet v2 network, the data was first converted to the TFRecords format. The TFRecords data was then passed as the input to a pretrained SSD MobileNet model from the Google Coral models repository. The network was then trained for about 100000 steps(about 120 epochs) on an AWS t2.2xlarge CPU instance. The Tensorflow model was then exported to a TFLite EdgeTPU compatible model using Coral board developer tools.
 </p>
 <div class="flash">
@@ -420,6 +414,12 @@ f. BiFPN
 <a class="anchor" href="#Visualizing-Predictions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Visualizing Predictions<a class="anchor-link" href="#Visualizing-Predictions"> </a>
 </h1>
 <p>To visually inspect the predictions obtained from the model, I wrote a simple webapp using Streamlit. It took only a couple hundred lines of Python code, looks beautiful and is easily extensible allowing for all different kinds of summarized data presentation. The app is currently being tested interanally by the CleanRobotics team and is on track to be deployed in the early weeks of July.</p>
+<p><img src="/images/copied_from_nb/../images/streamlit.png" alt="">
+</p>
+<div class="flash">
+    <svg class="octicon octicon-info octicon octicon-info octicon octicon-info octicon octicon-info octicon octicon-info" viewbox="0 0 14 16" version="1.1" width="14" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M6.3 5.69a.942.942 0 01-.28-.7c0-.28.09-.52.28-.7.19-.18.42-.28.7-.28.28 0 .52.09.7.28.18.19.28.42.28.7 0 .28-.09.52-.28.7a1 1 0 01-.7.3c-.28 0-.52-.11-.7-.3zM8 7.99c-.02-.25-.11-.48-.31-.69-.2-.19-.42-.3-.69-.31H6c-.27.02-.48.13-.69.31-.2.2-.3.44-.31.69h1v3c.02.27.11.5.31.69.2.2.42.31.69.31h1c.27 0 .48-.11.69-.31.2-.19.3-.42.31-.69H8V7.98v.01zM7 2.3c-3.14 0-5.7 2.54-5.7 5.68 0 3.14 2.56 5.7 5.7 5.7s5.7-2.55 5.7-5.7c0-3.15-2.56-5.69-5.7-5.69v.01zM7 .98c3.86 0 7 3.14 7 7s-3.14 7-7 7-7-3.12-7-7 3.14-7 7-7z"></path></svg>
+    <strong>Note: </strong>The images in the screenshot above come from a subset of the MS-COCO dataset.
+</div>
 
 </div>
 </div>
@@ -430,6 +430,42 @@ f. BiFPN
 <h1 id="Evaluation-and-Results">
 <a class="anchor" href="#Evaluation-and-Results" aria-hidden="true"><span class="octicon octicon-link"></span></a>Evaluation and Results<a class="anchor-link" href="#Evaluation-and-Results"> </a>
 </h1>
+<p>As stated above, the EfficientDet model gets an mAP score of 0.69 while the SSD MobileNet model gets an mAP score of 0.49. Stay tuned for a more detailed comparison.</p>
+<p>For evaluation results using the COCO eval script, head to the project GitHub. The link can be found below.</p>
+<p>Sample results:</p>
+<figure>
+    <div style="display:flex">
+        <div style="flex">
+            <figure>
+
+<figure>
+  
+    <img class="docimage" src="/images/copied_from_nb/../images/paper-plate-input.jpg" alt="">
+    
+    
+</figure>
+
+                <figcaption><center>Input</center></figcaption>
+            </figure>
+        </div>
+        <div style="flex">
+            <figure>
+
+<figure>
+  
+    <img class="docimage" src="/images/copied_from_nb/../images/paper-plate-det.jpeg" alt="">
+    
+    
+</figure>
+
+                <figcaption><center>Output</center></figcaption>
+            </figure>
+        </div>
+    </div>
+
+    <figcaption><center></center>           </figcaption>
+
+</figure>
 </div>
 </div>
 </div>
