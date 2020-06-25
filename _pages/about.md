@@ -4,10 +4,8 @@ title: About Me
 permalink: /about/
 ---
 
-This is where you put the contents of your *About* page. Like all your pages, it's in [Markdown](https://guides.github.com/features/mastering-markdown/) format.
+I'm a Computer Science Masters grad from SUNY Buffalo, with a specialization in Artificial Intelligence. During my time at UB, I worked on autonomous vehicles for the [iCAVE2 project](https://icave2.cse.buffalo.edu/index.htm) as well as swarm robotics for the DARPA [OFFSET](https://www.darpa.mil/work-with-us/offensive-swarm-enabled-tactics) Program grant.
 
-This website is powered by **[fastpages](https://github.com/fastai/fastpages)** [^1].
+I also ran the Deep Learning [student community](https://jsaurabh.github.io/dl-ub) at UB, where we held workshops, tutorials, hackathons and talks on topics as diverse as language modeling to graph neural networks. Most recently, I was awarded the Graduate Entrepreneurship award for building consumer focused products while a graduate student in the Department of Computer Science.
 
-
-
-[^1]:a blogging platform that natively supports Jupyter notebooks in addition to other formats.
+Outside of code, I like building and takings things apart(a screwdriver toolkit was the first thing I ever bought), and have been known to enjoy the odd Star Wars movie marathon.
